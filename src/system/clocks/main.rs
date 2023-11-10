@@ -7,7 +7,7 @@
 
 
 
-#[link_section = ".bss.CLOCKS.main"]
+#[link_section = ".bss.LPC5500.clocks.MAIN"]
 static mut FREQUENCY: u32 = 0;
 
 
@@ -16,12 +16,28 @@ static mut FREQUENCY: u32 = 0;
 pub struct MainClock {
     /// Current frequency source.
     source: Source,
+
+    // PLL1 control.
+    //pll1: ,
 }
 
 impl MainClock {
-    /// Initializes the `MainClock` interface.
-    pub fn init() -> Self {
-        // Check which source is currently selected.
+    /// Switches the main clock signal source.
+    pub fn switch(&mut self, source: Source) {
+        // Get the current frequency.
+        let cfreq = source.frequency();
+
+        // Get the target frequency.
+        let tfreq = self.source.frequency();
+
+        // If the target frequency is higher than the current frequency, increase Flash wait states.
+
+        // If the target frequency is lower than the current frequency, decrease Flash wait states.
+    }
+
+    /// Configures the wait states of the Flash for the desired freqency.
+    fn waitstates() {
+        
     }
 }
 
@@ -40,6 +56,6 @@ pub enum Source {
     /// Internal FRO at 96 MHz.
     FRO96MHz,
 
-    /// Internal PLL 1.
-    PLL1,
+    // Internal PLL 1.
+    //PLL1,
 }

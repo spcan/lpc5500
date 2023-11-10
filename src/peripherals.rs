@@ -6,11 +6,17 @@
 
 
 
-use crate::gpio::Pin;
+use crate::{
+    gpio::Pin,
+    system::clocks::main::MainClock,
+};
 
 
 
 pub struct Peripherals {
+    /// Main clock control.
+    pub mainclk: MainClock,
+
     /// Collection of all pins in the device.
     pub pins: Pins,
 }

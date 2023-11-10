@@ -1,6 +1,7 @@
 
 #![no_std]
 
+#![feature(generic_const_exprs)]
 
 
 //mod critical;
@@ -24,6 +25,7 @@ pub unsafe fn init() -> Peripherals {
 
     unsafe {
         Peripherals {
+            mainclk: system::clocks::main::MainClock::create(),
             pins: peripherals::Pins::create(),
         }
     }

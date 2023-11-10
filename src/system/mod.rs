@@ -3,11 +3,13 @@
 
 
 //pub mod analog;
-//pub mod clocks;
+pub mod clocks;
 pub(crate) mod enable;
 //pub mod pdrun;
-//pub mod power;
+pub mod power;
 pub(crate) mod reset;
+
+pub mod user;
 
 
 
@@ -98,6 +100,9 @@ pub(crate) trait Control {
 pub fn init() {
     // Unreset all memory regions.
     {}
+
+    // Initialize the clock system.
+    clocks::init();
 
     // Initialize the GPIO pins.
     {
