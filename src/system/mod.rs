@@ -42,6 +42,8 @@ impl SystemControl {
         // The reset clear register.
         let dst = (Self::SYSCON + Self::AHBSET) + (P::REG * 4);
 
+        defmt::warn!("Enabling bit {} on AHBSET {}", P::OFF, P::REG);
+
         unsafe {
             // Write to the clear register.
             core::ptr::write_volatile(dst as *mut u32, 1 << P::OFF);
@@ -111,6 +113,30 @@ pub fn init() -> user::UserSystemControl {
 
     // Initialize the clocks.
     //clocks::init();
+
+    // Read CPACR @ 0xE000ED88 and enable both the PowerQuad (CP0) and CASPER (CP1) coprocessors.
+    unsafe {
+        // Read the CPACR.
+        let mut cpacr = core::ptr::read_volatile(0xE000ED88 as *const u32);
+
+        // Enable full access for the PQ and CASPER.
+        cpacr |= (0b11 << 2) | (0b11 << 0);
+
+        // Write the modified CPACR.
+        core::ptr::write_volatile(0xE000ED88 as *mut u32, cpacr);
+    }
+
+    // Read NSACR @ 0xE000ED8C and enable both PQ and CASPER in non secure code.
+    unsafe {
+        // Read the NSACR.
+        let mut nsacr = core::ptr::read_volatile(0xE000ED8C as *const u32);
+
+        // Enable full access for the PQ and CASPER.
+        nsacr |= (1 << 1) | (1 << 0);
+
+        // Write the modified NSACR.
+        core::ptr::write_volatile(0xE000ED8C as *mut u32, nsacr);
+    }
 
     user
 }

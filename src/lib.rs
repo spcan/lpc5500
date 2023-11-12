@@ -1,6 +1,7 @@
 
 #![no_std]
 
+#![feature(asm_const)]
 #![feature(generic_const_exprs)]
 
 
@@ -10,6 +11,8 @@ pub mod gpio;
 pub mod peripherals;
 
 pub mod system;
+
+pub mod powerquad;
 
 
 
@@ -30,6 +33,7 @@ pub unsafe fn init() -> Peripherals {
     unsafe {
         Peripherals {
             pins,
+            powerquad: powerquad::PowerQuad::create(),
             user,
         }
     }

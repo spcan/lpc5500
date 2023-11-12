@@ -8,18 +8,20 @@
 
 use crate::{
     gpio::Pins,
-    //system::clocks::main::MainClock,
+
+    powerquad::PowerQuad,
+
     system::user::UserSystemControl,
 };
 
 
 
 pub struct Peripherals {
-    /// Main clock control.
-    //pub mainclk: MainClock,
-
     /// Collection of all pins in the device.
     pub pins: Pins,
+
+    /// PowerQuad coprocessor interface.
+    pub powerquad: PowerQuad,
 
     /// User facing System Control interface.
     pub user: UserSystemControl,
