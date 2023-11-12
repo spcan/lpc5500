@@ -9,3 +9,9 @@ rustflags = [
 
 [build]
 target = "thumbv8m.main-none-eabihf"
+
+[profile.release]
+lto = true
+debug = true
+codegen-units = 1
+opt-level = "z"
