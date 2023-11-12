@@ -1,6 +1,8 @@
 
 #![no_std]
 
+#![allow(dead_code)]
+
 #![feature(asm_const)]
 #![feature(generic_const_exprs)]
 
@@ -8,11 +10,11 @@
 //mod critical;
 
 pub mod gpio;
-pub mod peripherals;
-
+pub mod powerquad;
+pub mod security;
 pub mod system;
 
-pub mod powerquad;
+mod peripherals;
 
 
 
@@ -30,11 +32,12 @@ pub unsafe fn init() -> Peripherals {
     // Initialize the pins.
     let pins = gpio::init();
 
-    unsafe {
-        Peripherals {
-            pins,
-            powerquad: powerquad::PowerQuad::create(),
-            user,
-        }
+    // Initialize security system.
+    security::init();
+
+    Peripherals {
+        pins,
+        powerquad: powerquad::PowerQuad::create(),
+        user,
     }
 }

@@ -42,8 +42,6 @@ impl SystemControl {
         // The reset clear register.
         let dst = (Self::SYSCON + Self::AHBSET) + (P::REG * 4);
 
-        defmt::warn!("Enabling bit {} on AHBSET {}", P::OFF, P::REG);
-
         unsafe {
             // Write to the clear register.
             core::ptr::write_volatile(dst as *mut u32, 1 << P::OFF);
