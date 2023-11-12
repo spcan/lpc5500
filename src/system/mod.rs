@@ -2,11 +2,11 @@
 
 
 
-//pub mod analog;
-pub mod clocks;
+pub(crate) mod clocks;
 pub(crate) mod enable;
-//pub mod pdrun;
-pub mod power;
+pub(crate) mod flash;
+pub(crate) mod pdrun;
+pub(crate) mod power;
 pub(crate) mod reset;
 
 pub mod user;
@@ -14,9 +14,7 @@ pub mod user;
 
 
 /// Driver to control main system functions (enable, reset, etc...).
-pub struct SystemControl {
-
-}
+pub struct SystemControl;
 
 // Metadata, constants, addresses and other necessary data.
 impl SystemControl {
@@ -97,33 +95,15 @@ pub(crate) trait Control {
 
 
 /// Initializes the system to its most basic functional state.
-pub fn init() {
+pub fn init() -> user::UserSystemControl {
     // Unreset all memory regions.
     {}
 
     // Initialize the clock system.
     clocks::init();
 
-    // Initialize the GPIO pins.
-    {
-        use crate::gpio::{
-            GPIOPort, IOControl,
-        };
-
-        // Unreset GPIO ports 0 and 1.
-        SystemControl::unreset::<GPIOPort<0>>();
-        SystemControl::unreset::<GPIOPort<1>>();
-
-        // Enable GPIO ports 0, 1, 2 and 3.
-        SystemControl::enable::<GPIOPort<0>>();
-        SystemControl::enable::<GPIOPort<1>>();
-        SystemControl::enable::<GPIOPort<2>>();
-        SystemControl::enable::<GPIOPort<3>>();
-
-        // Unreset and enable IOControl.
-        SystemControl::unreset::<IOControl>();
-        SystemControl::enable::<IOControl>();
-    }
+    // Initialize the user interface.
+    let user = user::UserSystemControl::init();
 
     // Initialize the analog control peripheral.
     //reset::ResetControl::unreset::<analog::AnalogControl>();
@@ -131,4 +111,6 @@ pub fn init() {
 
     // Initialize the clocks.
     //clocks::init();
+
+    user
 }

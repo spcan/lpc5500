@@ -4,7 +4,6 @@
 
 use super::{
     common::*,
-    gpio::GPIOControl,
     iocon::IOControl,
 };
 

@@ -2,12 +2,12 @@
 
 
 
-
+use defmt::Format;
 
 
 
 /// Defines the possible values of the Core domain voltage levels (in mV).
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, Format, PartialEq)]
 pub enum CoreVoltage {
     /// 0.950 mV.
     V0950 =  0,
@@ -66,7 +66,7 @@ impl CoreVoltage {
 
 
 /// Defines the possible values of the Always-On domain voltage levels (in mV).
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, Format, PartialEq)]
 pub enum AOVoltage {
     /// 0.700 V.
     V0700 =  1,

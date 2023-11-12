@@ -2,18 +2,18 @@
 
 
 
-pub mod flash;
-
-pub mod main;
-
-
-
-use core::ptr::{
-    read_volatile as read,
-    write_volatile as write,
+pub use crate::system::{
+    clocks::main::ClockSource,
+    flash::{
+        Acceleration, BufferUsage,
+    },
 };
 
-use crate::system::power::PowerControl;
+use crate::system::{
+    clocks::main::MainClock,
+    flash::FlashControl,
+    power::PowerControl
+};
 
 
 
@@ -21,58 +21,71 @@ use crate::system::power::PowerControl;
 /// modified on the fly by the user.
 pub struct UserSystemControl {
     /// Flash control.
-    /// Allows the user to modify Flash acceleration.
-    pub flash: flash::Flash,
-
-    // PLL1 control.
-    // Allows the user to change the configuration of the PLL1.
-    // PLL1 is reserved to be used as a source for the main clock.
-    //
+    pub flash: FlashControl,
 
     /// Main clock control.
-    main: main::MainClock,
+    pub main: MainClock,
+
+    /// System Power control.
+    pub power: PowerControl,
 }
 
 impl UserSystemControl {
-    /// PMC base address.
-    const PMC: u32 = 0x40020000;
+    /// SYSCON base address.
+    const SYSCON: u32 = 0x50000000;
 
-    /// DCDC 0 register offset.
-    const DCDC0: u32 = 0x10;
+    /// Main Clock source select A offset.
+    const MAINSELA: u32 = 0x280;
 
-    /// DCDC 1 register offset.
-    const DCDC1: u32 = 0x14;
+    /// Main Clock source select B offset.
+    const MAINSELB: u32 = 0x284;
 
-    /// LDOPMU register offset.
-    const LDOPMU: u32 = 0x1C;
+    /// Initialize the user system control interface.
+    pub(super) fn init() -> Self {
+        // Initialize flash.
+        let flash = FlashControl::init();
+
+        // Initialize the main clock.
+        let main = MainClock::init();
+
+        // Initialize power control.
+        let power = PowerControl::init();
+
+        Self { flash, main, power, }
+    }
 
     /// Sets the clock source of the main clock.
-    pub fn setclock(&mut self, source: main::ClockSource) {
+    pub fn setclock(&mut self, source: ClockSource) {
         // Get the current frequency and clock source.
-        let (cfreq, src) = self.main.getclock();
+        let (cfreq, current) = self.main.getclock();
 
         // Skip changes if the requested source is the current source.
-        if src == source { return }
+        if current == source { return }
 
         // Get the target frequency.
         let tfreq = source.frequency();
 
+        //defmt::debug!("Switching main clock from {} [{} MHz] to {} [{} MHz]", current, cfreq / 1_000_000, source, tfreq / 1_000_000);
+
         // If the target frequency is higher than the current frequency configure the device.
         if tfreq > cfreq {
             // Configure the voltage necessary for the target frequency.
-            PowerControl::configfreq(tfreq);
+            self.power.target(tfreq);
 
             // Configure the Flash wait states.
-            self.flash.configfreq(tfreq);
+            self.flash.target(tfreq);
         }
+
+        // Switch the main clock.
+        self.main.switch( source );
 
         // If the target frequency is lower than the current frequency configure the device.
         if tfreq < cfreq {
             // Configure the voltage necessary for the target frequency.
-            PowerControl::configfreq(tfreq);
+            self.power.target(tfreq);
 
             // Configure the Flash wait states.
-            self.flash.configfreq(tfreq);
+            self.flash.target(tfreq);
         }
     }
 }
