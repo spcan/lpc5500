@@ -9,11 +9,13 @@
 
 //mod critical;
 
+pub mod adc;
 pub mod gpio;
 pub mod powerquad;
 pub mod security;
 pub mod system;
 
+mod interrupts;
 mod peripherals;
 
 

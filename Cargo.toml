@@ -9,6 +9,7 @@ edition = "2021"
 panic = "abort"
 lto = true
 debug = true
+opt-level = "z"
 
 [profile.release]
 panic = "abort"
@@ -26,25 +27,85 @@ opt-level = "z"
 [dependencies.defmt]
 version = "0.3"
 
-#[dependencies.micro]
-#git = "https://github.com/micro-rust/micro.git"
-#features = ["arm"]
-
-
-
-#[build-dependencies]
-#cc = "1.0"
 
 
 [features]
 
-# External oscillators
 
-## General external oscillators flag
-xosc = []
+# Flash configurations.
 
-## High speed external oscillator flag
-xosc-hs = ["xosc"]
+flash-640 = []
+flash-512 = []
+flash-256 = []
 
-## Low speed external oscillator flag
-xosc-ls = ["xosc"]
+
+
+# SRAM configurations.
+
+sram-1-full = []
+sram-1-half = []
+
+sram-2 = []
+sram-3 = []
+sram-4 = []
+
+sram-320 = ["sram-1-full", "sram-2", "sram-3", "sram-4"]
+sram-256 = ["sram-1-full", "sram-2", "sram-4"]
+sram-144 = ["sram-1-half"]
+
+
+
+# Optional secondary core.
+dual-core = []
+
+# Optional security and coprocessor peripherals.
+
+casper    = []
+hash-aes  = []
+powerquad = []
+prince    = []
+puf       = []
+trustzone = []
+
+# Optional peripherals variants.
+pvariant-01 = ["casper", "dual-core", "hash-aes", "powerquad", "prince", "puf", "trustzone"]
+pvariant-02 = ["casper", "hash-aes", "prince", "puf"]
+pvariant-03 = []
+
+
+
+# LPC55S69 variants
+
+lpc55s69jbd100 = ["flash-640", "sram-320", "pvariant-01"]
+lpc55s69jev98  = ["flash-640", "sram-320", "pvariant-01"]
+lpc55s69jbd64  = ["flash-640", "sram-320", "pvariant-01"]
+
+# LPC55S69 variants
+
+lpc55s66jbd100 = ["flash-256", "sram-144", "pvariant-01"]
+lpc55s66jev98  = ["flash-256", "sram-144", "pvariant-01"]
+lpc55s66jbd64  = ["flash-256", "sram-144", "pvariant-01"]
+
+# LPC55S28 variants
+
+lpc55s28jdb100 = ["flash-512", "sram-256", "pvariant-02"]
+lpc55s28jev98  = ["flash-512", "sram-256", "pvariant-02"]
+lpc55s28jdb64  = ["flash-512", "sram-256", "pvariant-02"]
+
+# LPC55S26 variants
+
+lpc55s26jdb100 = ["flash-256", "sram-144", "pvariant-02"]
+lpc55s26jev98  = ["flash-256", "sram-144", "pvariant-02"]
+lpc55s26jdb64  = ["flash-256", "sram-144", "pvariant-02"]
+
+# LPC5528 variants
+
+lpc5528jdb100 = ["flash-512", "sram-256"]
+lpc5528jev98  = ["flash-512", "sram-256"]
+lpc5528jdb64  = ["flash-512", "sram-256"]
+
+# LPC5526 variants
+
+lpc5526jdb100 = ["flash-256", "sram-144"]
+lpc5526jev98  = ["flash-256", "sram-144"]
+lpc5526jdb64  = ["flash-256", "sram-144"]

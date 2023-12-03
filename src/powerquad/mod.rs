@@ -3,8 +3,13 @@
 
 
 pub mod coprocessor;
+pub mod engine;
 
 
+
+use core::sync::atomic::{
+    AtomicU32, Ordering,
+};
 
 use coprocessor::Coprocessor;
 
@@ -18,6 +23,13 @@ use crate::system::{
     },
 };
 
+use engine::MathEngine;
+
+
+
+#[link_section = ".data.LPC5500.powerquad.POWEROFF"]
+pub(self) static POWER: AtomicU32 = AtomicU32::new( 0 );
+
 
 
 pub struct PowerQuad;
@@ -30,7 +42,7 @@ impl PowerQuad {
 
     /// Initializes the PowerQuad.
     /// Returns all the interfaces to the PowerQuad.
-    pub fn init(self) -> (Coprocessor<0>, Coprocessor<1>) {
+    pub fn init(self) -> (Coprocessor<0>, Coprocessor<1>, MathEngine) {
         // Reset the peripheral.
         SystemControl::reset::<Self>();
 
@@ -43,7 +55,21 @@ impl PowerQuad {
         // Enable the clock to the power quad.
         SystemControl::enable::<Self>();
 
-        (Coprocessor::create(), Coprocessor::create())
+        (Coprocessor::create(), Coprocessor::create(), MathEngine::create())
+    }
+
+    /// Powers off the PowerQuad.
+    #[inline(always)]
+    fn poweroff() {
+        // Disable the clock to the power quad.
+        SystemControl::disable::<Self>();
+    }
+
+    /// Powers on the PowerQuad.
+    #[inline(always)]
+    fn poweron() {
+        // Enable the clock to the power quad.
+        SystemControl::enable::<Self>();
     }
 }
 
@@ -57,3 +83,23 @@ impl Unreset for PowerQuad {}
 
 unsafe impl Disable for PowerQuad {}
 unsafe impl Reset   for PowerQuad {}
+
+
+
+/// Internal function to turn on the PowerQuad coprocessor.
+pub(self) fn poweron() {
+    // Decrement the current value and read the last value.
+    let _ = POWER.fetch_sub(1, Ordering::AcqRel);
+
+    // Power on.
+    PowerQuad::poweron();
+}
+
+/// Internal function to request to turn off the PowerQuad coprocessor.
+pub(self) fn poweroff() {
+    // Increment the current value and read the last value.
+    let last = POWER.fetch_add(1, Ordering::AcqRel);
+
+    // Power off if the other two devices have requested a power off.
+    if last >= 2 { PowerQuad::poweroff(); }
+}

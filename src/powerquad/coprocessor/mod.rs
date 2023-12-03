@@ -25,6 +25,15 @@ impl<const N: usize> Coprocessor<N> {
     pub(super) fn create() -> Self {
         Self
     }
+
+    /// Turns off the PowerQuad coprocessor (if all other PQ interfaces are off).
+    pub fn sleep(self) -> SleepToken<N> {
+        // Drop the interface to force a power off.
+        core::mem::drop(self);
+
+        // Create the sleep token.
+        SleepToken::create()
+    }
 }
 
 impl<'a, const N: usize> CoprocessorInterface<'a, f32> for Coprocessor<N> where Coprocessor<N>: 'a {
@@ -37,11 +46,18 @@ impl<'a, const N: usize> CoprocessorInterface<'a, f32> for Coprocessor<N> where 
     }
 }
 
+impl<const N: usize> Drop for Coprocessor<N> {
+    fn drop(&mut self) {
+        // Increase the POWEROFF counter to allow the other interfaces to sleep.
+        super::poweroff();
+    }
+}
+
 
 
 /// An ongoing PowerQuad Coprocessor operation.
 pub struct Operation<'a, const N: usize, NUMBER: CoprocessorNumber> {
-    /// The read functino to use.
+    /// The read function to use.
     read: ReadType,
 
     /// This is a mutability lock on the origin coprocessor.
@@ -101,5 +117,26 @@ impl CoprocessorNumber for f32 {
 
     fn from(x: u32) -> Self {
         unsafe { core::mem::transmute(x) }
+    }
+}
+
+
+
+/// Sleep token to power on the PowerQuad.
+pub struct SleepToken<const N: usize>;
+
+impl<const N: usize> SleepToken<N> {
+    /// Internal function to create a new instance.
+    pub(super) fn create() -> Self {
+        Self
+    }
+
+    /// Turns on the PowerQuad.
+    pub fn wake(self) -> Coprocessor<N> {
+        // Power on the PowerQuad.
+        super::poweron();
+
+        // Create the sleep token.
+        Coprocessor::create()
     }
 }
