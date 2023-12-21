@@ -40,15 +40,11 @@ pub(super) fn init() {
         let fen = ((pdrun >> 5) & 1) == 0;
         let sen = ((pdrun >> 5) & 1) == 0;
 
-        defmt::debug!("192 MHz FRO is powered: {} | 32 kHz FRO is powered: {}", fen, sen);
-
         // Read the FRO192M_CTRL register.
         let froen = core::ptr::read_volatile((ANACTRL + FRO192MCTRL) as *const u32);
 
         let en12 = ((froen >> 14) & 1) == 1;
         let en48 = ((froen >> 15) & 1) == 1;
         let en96 = ((froen >> 30) & 1) == 1;
-
-        defmt::debug!("12 Mhz FRO is enabled: {} | 48 Mhz FRO is enabled: {} | 96 Mhz FRO is enabled: {}", en12, en48, en96);
     }
 }
