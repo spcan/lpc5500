@@ -5,6 +5,8 @@
 pub mod coprocessor;
 pub mod engine;
 
+mod sleep;
+
 
 
 use core::sync::atomic::{
@@ -23,7 +25,7 @@ use crate::system::{
     },
 };
 
-use engine::MathEngine;
+use engine::Engine;
 
 
 
@@ -42,7 +44,9 @@ impl PowerQuad {
 
     /// Initializes the PowerQuad.
     /// Returns all the interfaces to the PowerQuad.
-    pub fn init(self) -> (Coprocessor<0>, Coprocessor<1>, MathEngine) {
+    pub fn init(self) -> (Coprocessor<0>, Coprocessor<1>, Engine) {
+        use crate::powerquad::sleep::Sleep;
+
         // Reset the peripheral.
         SystemControl::reset::<Self>();
 
@@ -55,7 +59,19 @@ impl PowerQuad {
         // Enable the clock to the power quad.
         SystemControl::enable::<Self>();
 
-        (Coprocessor::create(), Coprocessor::create(), MathEngine::create())
+        // Set output formats to F32.
+        unsafe {
+            use core::ptr::write_volatile as write;
+
+            const FORMAT: u32 = (0b10 << 4) | 0b10;
+
+            write((0x400A6000 + 0x004) as *mut u32, FORMAT);
+            write((0x400A6000 + 0x00C) as *mut u32, FORMAT);
+            write((0x400A6000 + 0x014) as *mut u32, FORMAT);
+            write((0x400A6000 + 0x01C) as *mut u32, FORMAT);
+        }
+
+        (Coprocessor::create(), Coprocessor::create(), Engine::create())
     }
 
     /// Powers off the PowerQuad.

@@ -20,22 +20,6 @@ use traits::{
 /// PowerQuad Coprocessor interface.
 pub struct Coprocessor<const N: usize>;
 
-impl<const N: usize> Coprocessor<N> {
-    /// Internal function to create a new instance.
-    pub(super) fn create() -> Self {
-        Self
-    }
-
-    /// Turns off the PowerQuad coprocessor (if all other PQ interfaces are off).
-    pub fn sleep(self) -> SleepToken<N> {
-        // Drop the interface to force a power off.
-        core::mem::drop(self);
-
-        // Create the sleep token.
-        SleepToken::create()
-    }
-}
-
 impl<'a, const N: usize> CoprocessorInterface<'a, f32> for Coprocessor<N> where Coprocessor<N>: 'a {
     const CPID: usize = N << 1;
 
@@ -46,10 +30,23 @@ impl<'a, const N: usize> CoprocessorInterface<'a, f32> for Coprocessor<N> where 
     }
 }
 
+impl<const N: usize> super::sleep::Sleep for Coprocessor<N> {
+    fn create() -> Self {
+        Self
+    }
+}
+
 impl<const N: usize> Drop for Coprocessor<N> {
     fn drop(&mut self) {
         // Increase the POWEROFF counter to allow the other interfaces to sleep.
         super::poweroff();
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl<const N: usize> defmt::Format for Coprocessor<N> {
+    fn format(&self, f: defmt::Formatter) {
+        defmt::write!(f, "PowerQuad Coprocessor interface {=u8}", N as u8)
     }
 }
 
@@ -117,26 +114,5 @@ impl CoprocessorNumber for f32 {
 
     fn from(x: u32) -> Self {
         unsafe { core::mem::transmute(x) }
-    }
-}
-
-
-
-/// Sleep token to power on the PowerQuad.
-pub struct SleepToken<const N: usize>;
-
-impl<const N: usize> SleepToken<N> {
-    /// Internal function to create a new instance.
-    pub(super) fn create() -> Self {
-        Self
-    }
-
-    /// Turns on the PowerQuad.
-    pub fn wake(self) -> Coprocessor<N> {
-        // Power on the PowerQuad.
-        super::poweron();
-
-        // Create the sleep token.
-        Coprocessor::create()
     }
 }
