@@ -2,6 +2,10 @@
 
 
 
+//pub mod command;
+
+
+
 use core::ptr::{
     read_volatile  as read ,
     write_volatile as write,
@@ -50,16 +54,16 @@ impl Adc {
     /// Initializes the ADC.
     pub fn init(&mut self/*, config: Config*/) {
         // Reset the peripheral.
-        SystemControl::reset<Self>();
+        SystemControl::reset::<Self>();
 
         // Enable the clock to the peripheral.
-        SystemControl::enable<Self>();
+        SystemControl::enable::<Self>();
 
         // Unreset the peripheral.
-        SystemControl::unreset<Self>();
+        SystemControl::unreset::<Self>();
 
         // Enable the clock to the peripheral.
-        SystemControl::enable<Self>();
+        SystemControl::enable::<Self>();
 
         unsafe {
             // Reset the ADC clock div.
