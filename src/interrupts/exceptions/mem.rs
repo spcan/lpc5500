@@ -7,11 +7,11 @@
 
 
 /// Function handler of the MemManage Fault exception.
-pub(super) fn Handler() {
+pub(super) unsafe extern "C" fn Handler() {
     // Get the Mem Fault information.
     let info = MemFault::get();
 
-    // TODO : Include here user code.
+    loop { core::arch::asm!("nop", options(nomem, nostack)) }
 }
 
 
@@ -19,7 +19,6 @@ pub(super) fn Handler() {
 /// Contains all information of a Memory Management Fault.
 /// <div class="warning">WARNING : When this struct is dropped it clears the Bus Fault flags. To
 /// avoid clearing the flags use `MemFault::forget()`</div>
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MemFault {
     /// The Mem Fault State Register.
     state: u32,
@@ -61,7 +60,7 @@ impl MemFault {
 }
 
 impl Drop for MemFault {
-    fn drop(mut self) {
+    fn drop(&mut self) {
         // Clear the sticky flags.
         unsafe { core::ptr::write_volatile( 0xE000ED28 as *mut u32, self.state ) }
     }

@@ -3,7 +3,10 @@
 
 
 mod bus;
+mod hardfault;
 mod mem;
+mod nmi;
+mod systick;
 mod usage;
 
 
@@ -17,30 +20,25 @@ use super::Vector;
 
 
 /// Vector table of Core 0.
-pub(crate) static VTABLE0: [Vector; 16] = [
-    // Initial Stack Pointer vector.
-    Vector::reserved(),
-
-    // Reset exception.
-    Vector::reserved(),
-
-    // Non_Maskable interrupt exception.
-    Vector::reserved(),
+#[link_section = ".exceptions"]
+pub(crate) static VTABLE0: [Vector; 14] = [
+    // Non Maskable Interrupt exception.
+    Vector::create( nmi::Handler ),
 
     // HardFault exception.
-    Vector::reserved(),
+    Vector::create( hardfault::Handler ),
 
     // Memory Usage exception.
-    Vector::reserved(),
+    Vector::create( mem::Handler ),
 
     // Bus Fault exception.
-    Vector::reserved(),
+    Vector::create( bus::Handler ),
 
     // Usage Fault exception.
-    Vector::reserved(),
+    Vector::create( usage::Handler ),
 
     // Secure Fault exception.
-    Vector::reserved(),
+    Vector::create( Block ),
 
     // Reserved 8.
     Vector::reserved(),
@@ -52,19 +50,19 @@ pub(crate) static VTABLE0: [Vector; 16] = [
     Vector::reserved(),
 
     // Supervisor Call exception.
-    Vector::reserved(),
+    Vector::create( Ignore ),
 
     // Debug Monitor exception.
-    Vector::reserved(),
+    Vector::create( Ignore ),
 
     // Reserved 13.
     Vector::reserved(),
 
     // Pend Supervisor Call exception.
-    Vector::reserved(),
+    Vector::create( Ignore ),
 
     // System Tick exception.
-    Vector::reserved(),
+    Vector::create( Ignore ),
 ];
 
 
@@ -73,4 +71,21 @@ pub(crate) static VTABLE0: [Vector; 16] = [
 #[inline(always)]
 fn cfsr() -> u32 {
     unsafe { core::ptr::read_volatile(0xE000ED28 as *const u32) }
+}
+
+
+/// Default handler to block execution.
+#[allow(non_snake_case)]
+#[inline(never)]
+unsafe extern "C" fn Block() {
+    loop { core::arch::asm!("nop", options(nomem, nostack)) }
+}
+
+
+
+/// Default handler to ignore exception.
+#[allow(non_snake_case)]
+#[inline(never)]
+unsafe extern "C" fn Ignore() {
+    return
 }

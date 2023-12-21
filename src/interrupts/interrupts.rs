@@ -183,4 +183,6 @@ pub(crate) static INTERRUPTS: [Vector; 60] = [
 
     // High Speed SPI interrupt.
     Vector::reserved(),
+
+    Vector::reserved(),
 ];

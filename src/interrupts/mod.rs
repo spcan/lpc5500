@@ -10,7 +10,7 @@ mod interrupts;
 /// A vector for an interrupt or exception.
 pub union Vector {
     /// Existing interrupt.
-    ptr: u32,
+    ptr: unsafe extern "C" fn(),
 
     /// Reserved interrupt.
     res: u32,
@@ -18,7 +18,7 @@ pub union Vector {
 
 impl Vector {
     /// Creates an interrupt.
-    pub(self) const fn create(ptr: u32) -> Self {
+    pub(self) const fn create(ptr: unsafe extern "C" fn()) -> Self {
         Self { ptr, }
     }
 

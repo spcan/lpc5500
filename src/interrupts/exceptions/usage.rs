@@ -7,11 +7,12 @@
 
 
 /// Function handler of the Usage Fault exception.
-pub(super) fn Handler() {
+pub(super) unsafe extern "C" fn Handler() {
     // Get the Usage Fault information.
     let info = UsageFault::get();
 
     // TODO : Include here user code.
+    loop { core::arch::asm!("nop", options(nomem, nostack)) }
 }
 
 
@@ -41,8 +42,8 @@ impl UsageFault {
     }
 }
 
-impl Drop for Usage {
-    fn drop(mut self) {
+impl Drop for UsageFault {
+    fn drop(&mut self) {
         // Clear the sticky flags.
         unsafe { core::ptr::write_volatile( 0xE000ED28 as *mut u32, self.0 << 16 ) }
     }
