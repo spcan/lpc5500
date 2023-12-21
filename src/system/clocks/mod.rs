@@ -14,11 +14,13 @@ pub mod main;
 
 /// Initializes the clocks of the device.
 pub(crate) fn init() {
-    defmt::trace!("Powering up internal FROs");
+    #[cfg(feature = "defmt")]
+    defmt::trace!("Powering up internal FROs...");
 
     // Ensure the FROs are running.
     fro::init();
 
+    #[cfg(feature = "defmt")]
     defmt::trace!("FROs are enabled");
 
     // 

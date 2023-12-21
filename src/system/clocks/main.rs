@@ -14,8 +14,6 @@ use core::{
     },
 };
 
-use defmt::Format;
-
 
 
 #[link_section = ".bss.LPC5500.user.MAINCLK"]
@@ -128,7 +126,8 @@ impl MainClock {
 
 
 /// All clock sources allowed for the main clock.
-#[derive(Clone, Copy, Eq, Format, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum ClockSource {
     /// Internal FRO at 1 MHz.
     FRO1Mhz,
