@@ -52,6 +52,13 @@ impl super::GPIOPin for AnyPin {
     }
 }
 
+#[cfg(feature = "defmt")]
+impl defmt::Format for AnyPin {
+    fn format(&self, f: defmt::Formatter) {
+        fmt(self.port, self.pin, false, f)
+    }
+}
+
 
 
 /// Specific pin type.
@@ -87,6 +94,13 @@ impl<const PORT: u8, const PIN: u8> super::GPIOPin for Pin<PORT, PIN> {
 
     fn pin(&self) -> u8 {
         PIN
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl<const PORT: u8, const PIN: u8> defmt::Format for Pin<PORT, PIN> {
+    fn format(&self, f: defmt::Formatter) {
+        fmt(PORT, PIN, true, f)
     }
 }
 
@@ -128,5 +142,17 @@ pub trait GPIOPin {
     /// Enables or disables the digital mode of this pin.
     fn digital(&mut self, d: bool) {
         IOControl::setdigital( self.port(), self.pin(), d )
+    }
+}
+
+
+
+#[cfg(feature = "defmt")]
+#[inline(never)]
+fn fmt(port: u8, pin: u8, typed: bool, fmt: defmt::Formatter) {
+    if typed {
+        defmt::write!(fmt, "Const Typed GPIO pin {=u8}:{=u8}", port, pin)
+    } else {
+        defmt::write!(fmt, "Untyped GPIO pin {=u8}:{=u8}", port, pin)
     }
 }
