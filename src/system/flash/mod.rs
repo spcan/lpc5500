@@ -7,8 +7,6 @@ use core::ptr::{
     write_volatile as write,
 };
 
-use defmt::Format;
-
 
 
 pub struct FlashControl;
@@ -160,7 +158,8 @@ impl FlashControl {
 
 
 /// Flash acceleration configuration.
-#[derive(Clone, Copy, Format, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+#[cfg_attr(feature="defmt", derive(defmt::Format))]
 pub struct Acceleration {
     /// Usage of buffers for data accesses.
     pub dbuf: BufferUsage,
@@ -175,7 +174,8 @@ pub struct Acceleration {
 
 
 /// Buffer usage strategy for Flash accesses (instruction and data).
-#[derive(Clone, Copy, Format, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+#[cfg_attr(feature="defmt", derive(defmt::Format))]
 pub enum BufferUsage {
     /// No buffers are used for Flash accesses (instruction or data).
     None,

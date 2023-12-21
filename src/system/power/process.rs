@@ -5,13 +5,12 @@
 
 use core::ptr::read_volatile as read;
 
-use defmt::Format;
-
 use super::PowerProfile;
 
 
 
-#[derive(Clone, Copy, Eq, Format, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+#[cfg_attr(feature="defmt", derive(defmt::Format))]
 pub enum ProcessNode {
     /// Slow.
     SSS,

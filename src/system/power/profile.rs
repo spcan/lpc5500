@@ -4,11 +4,10 @@
 
 use core::ptr::read_volatile as read;
 
-use defmt::Format;
 
 
-
-#[derive(Clone, Copy, Eq, Format, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+#[cfg_attr(feature="defmt", derive(defmt::Format))]
 pub enum PowerProfile {
     /// Low power profile (under 100 MHz).
     Low,

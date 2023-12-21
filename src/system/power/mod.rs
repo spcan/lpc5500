@@ -21,7 +21,10 @@ use self::{
 
 
 
-pub struct PowerControl;
+pub struct PowerControl {
+    /// The process node of the device.
+    node: Option<ProcessNode>,
+}
 
 impl PowerControl {
     /// PMC base address.
@@ -38,7 +41,9 @@ impl PowerControl {
 
     /// Initializes the power control system.
     pub(crate) fn init() -> Self {
-        Self
+        Self {
+            node: None,
+        }
     }
 
     /// Configures the power of the device for the given target frequency.
@@ -56,7 +61,18 @@ impl PowerControl {
         }
 
         // Get the process node.
-        let process = ProcessNode::get();
+        let process = match self.node {
+            Some(node) => node,
+            None => {
+                // Read the process node.
+                let node = ProcessNode::get();
+
+                // Store the process node to avoid reading it again.
+                self.node = Some(node);
+
+                node
+            },
+        };
 
         // Get the core voltage for the given process and profile and set it.
         self.setvoltage( process.voltage( profile ) );
