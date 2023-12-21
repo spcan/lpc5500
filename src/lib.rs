@@ -10,6 +10,7 @@
 //mod critical;
 
 pub mod adc;
+//pub mod dma;
 pub mod gpio;
 pub mod powerquad;
 pub mod security;
@@ -28,6 +29,9 @@ pub use peripherals::Peripherals;
 pub unsafe fn init() -> Peripherals {
     // Initialize the system.
     let user = system::init();
+
+    // Initialize the DMAs.
+    //dma::init();
 
     // Initialize the timers.
 
