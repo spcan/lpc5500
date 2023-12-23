@@ -11,7 +11,7 @@
         *(.data .data.*);
 
         /* Align the data in FLASH to 8 bytes */
-        . = ALIGN(4);
+        . = ALIGN(8);
 
         /* Export end address */
         __edata = .;

@@ -24,11 +24,16 @@ pub struct UsageFault(u32);
 
 impl UsageFault {
     /// Reads the information of the Usage Fault.
-    pub(self) fn get() -> Self {
+    pub(super) fn get() -> Self {
         // Get the UFSR.
         let state = (super::cfsr() >> 8) & 0xFF;
 
         Self(state)
+    }
+
+    /// Returns the state of the Fault (if valid).
+    pub fn state(&self) -> u32 {
+        self.0
     }
 
     /// Returns `true` if the given Usage Fault reason appears in the Usage Fault status.

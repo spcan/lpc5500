@@ -29,7 +29,7 @@ pub struct BusFault {
 
 impl BusFault {
     /// Reads the information of the Bus Fault.
-    pub(self) fn get() -> Self {
+    pub(super) fn get() -> Self {
         // Get the BFSR.
         let state = (super::cfsr() >> 8) & 0xFF;
 
@@ -46,6 +46,11 @@ impl BusFault {
 
         // Read the BFAR.
         Some( self.address )
+    }
+
+    /// Returns the state of the Fault (if valid).
+    pub fn state(&self) -> u32 {
+        self.state
     }
 
     /// Returns `true` if the given Bus Fault reason appears in the Bus Fault status.

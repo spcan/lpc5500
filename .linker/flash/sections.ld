@@ -1,5 +1,5 @@
     /* Reset Vector Table section */
-    .vector_table :
+    .vectortable :
     {
         /* Force to the start of flash */
         . = ORIGIN(FLASH);
@@ -8,10 +8,11 @@
         __svt = .;
 
         /* Reset Stack Pointer */
-        LONG( ORIGIN(RAM) + LENGTH(RAM) );
+        LONG( ORIGIN(STACK0) + LENGTH(STACK0) );
 
         /* Force keep the Reset Vector */
-        KEEP(*(.RESETVECTOR));
+        /*KEEP(*(.RESETVECTOR));*/
+        LONG( Reset );
 
         /* Force keep the Reset Vector Table */
         KEEP(*(.exceptions));

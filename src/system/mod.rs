@@ -19,7 +19,7 @@ pub struct SystemControl;
 // Metadata, constants, addresses and other necessary data.
 impl SystemControl {
     /// Base address of the SYSCON peripheral.
-    const SYSCON: u32 = 0x50000000;
+    const SYSCON: u32 = 0x40000000;
 
     /// Offset of the RSTSET register block.
     const RSTSET: u32 = 0x120;
@@ -98,6 +98,52 @@ pub(crate) trait Control {
 pub fn init() -> user::UserSystemControl {
     // Unreset all memory regions.
     {}
+
+    // Initialize all memory regions.
+    unsafe {
+        core::arch::asm!(
+            // Push the registers that will be used. 
+            "push {{r0-r3}}",
+
+            // Zero out .bss.
+            "
+            ldr r0, =__sbss
+            ldr r1, =__ebss
+            movs r2, #0
+
+            2:
+            cmp r1, r0
+            beq 3f
+            stm r0!, {{r2}}
+            b 2b
+
+            3:
+            ",
+
+            // Initialize .data.
+            "
+            ldr r0, =__sdata
+            ldr r1, =__edata
+            ldr r2, =__sidata
+
+            4:
+            cmp r1, r0
+            beq 5f
+            ldm r2!, {{r3}}
+            stm r0!, {{r3}}
+            b 4b
+
+            5:
+            ",
+
+            // Pop the registers used.
+            "
+            pop {{r0-r3}}
+            ",
+
+            options(nostack)
+        );
+    }
 
     // Initialize the clock system.
     clocks::init();

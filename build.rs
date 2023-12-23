@@ -34,7 +34,7 @@ fn buildscript() {
     let path = PathBuf::from( std::env::var_os( "OUT_DIR" ).expect( "Could not find output path: env var \"OUT_DIR\" is not set" ) );
 
     // Create the output file, overwriting if needed.
-    let file = File::create( path.join("test.x") ).expect( "Could not create output linker file" );
+    let file = File::create( path.join("link.x") ).expect( "Could not create output linker file" );
 
     // Create the 'MEMORY' string (1 kB) and the 'SECTIONS' string (7 kB) and the 'ASSERT' string (1 kB).
     let mut memory   = Vec::with_capacity(1 * 1024);
@@ -56,6 +56,11 @@ fn buildscript() {
     // Wrap the file in a buffered writer (8 kB) to avoid excessivo I/O.
     let mut writer = BufWriter::with_capacity(8 * 1024, file);
 
+    // Write the declarations section.
+    {
+        write!(&mut writer, "ENTRY( Reset );").expect( "Failed to write the entry" );
+    }
+
     // Write the MEMORY section.
     {
         write!(&mut writer, "MEMORY {{\n").expect("Failed to write to linker script output file");
@@ -74,6 +79,8 @@ fn buildscript() {
     {
         writer.write_all(&asserts).expect("Failed to write to linker script output file");
     }
+
+    // 
 
     // Set the link search.
     println!("cargo:rustc-link-search={}", path.display());

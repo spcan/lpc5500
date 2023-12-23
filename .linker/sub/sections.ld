@@ -1,8 +1,8 @@
     /* CPU 1 Vector Table */
-    .vt1 (NOLOAD) : ALIGN(320)
+    .vt1 (NOLOAD) : ALIGN(512)
     {
-        /* Align the section to 320 bytes */
-        . = ALIGN(320);
+        /* Align the section to 512 bytes */
+        . = ALIGN(512);
 
         /* Export the VT1 start symbol */
         __svt1 = .;

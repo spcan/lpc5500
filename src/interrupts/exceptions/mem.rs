@@ -29,7 +29,7 @@ pub struct MemFault {
 
 impl MemFault {
     /// Reads the information of the Mem Fault.
-    pub(self) fn get() -> Self {
+    pub(super) fn get() -> Self {
         // Get the MFSR.
         let state = super::cfsr() & 0xFF;
 
@@ -46,6 +46,11 @@ impl MemFault {
 
         // Read the BFAR.
         Some( self.address )
+    }
+
+    /// Returns the state of the Fault (if valid).
+    pub fn state(&self) -> u32 {
+        self.state
     }
 
     /// Returns `true` if the given Mem Fault reason appears in the Bus Fault status.

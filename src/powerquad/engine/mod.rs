@@ -20,6 +20,7 @@ impl Engine {
     const BASE: u32 = 0x500A6000;
 
     /// Adds two matrices, storing the result in the third matrix.
+    /// BUG : CUrrently this method will cause a HardFault to trigger.
     pub fn add<A: MatrixTrait, B: MatrixTrait, C: MatrixTrait>(&mut self, a: &A, b: &B, c: &mut C) -> Result<(), MatrixError> {
         // Calculate the LENGTH register.
         let l = Self::mtxcheck3(a.dims(), b.dims(), c.dims(), MatrixCheck3::Equal)?;

@@ -1,6 +1,6 @@
 /* Assert the vector tables are aligned to 320 bytes */
-ASSERT( __svt0 % 320 == 0,
-    "BUG(lpc5500): Core 0 Vector Table is not 320 byte aligned");
+ASSERT( __svt0 % 512 == 0,
+    "BUG(lpc5500): Core 0 Vector Table is not 512 byte aligned");
 
 /* Assert the Stack End is aligned to 4 bytes */
 ASSERT( __estack0 % 4 == 0,
