@@ -2,13 +2,16 @@
     .vt1 (NOLOAD) : ALIGN(512)
     {
         /* Align the section to 512 bytes */
-        . = ALIGN(512);
+        . = ORIGIN(STACK1);
 
         /* Export the VT1 start symbol */
         __svt1 = .;
 
+        /* Keep the vector table */
+        KEEP(*(.vtable.CORE1));
+
         /* Allocate 320 bytes to the Vector Table */
-        . += 320;
+        . = ORIGIN(STACK1) + 320;
 
         /* Export the VT1 end symbol */
         __evt1 = .;
@@ -18,7 +21,7 @@
     .stack1 (NOLOAD) :
     {
         /* Set the start of the stack to the end of the Vector Table */
-        . = ADDR(.vt1) + SIZEOF(.vt1);
+        . = ORIGIN(STACK1) + 320;
 
         /* Export the start symbol */
         __sstack1 = .;
