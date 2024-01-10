@@ -76,3 +76,38 @@ impl VectorTable<0> {
         }
     }
 }
+
+
+#[cfg(feature = "defmt")]
+impl<const N: usize> defmt::Format for VectorTable<N> {
+    fn format(&self, f: defmt::Formatter) {
+        // Header with Vector Table address.
+        fmt(f, &self.exceptions, &self.interrupts[..]);
+    }
+}
+
+
+
+/// Common log function for all Vtable implementations.
+#[cfg(feature = "defmt")]
+#[inline(never)]
+fn fmt(fmt: defmt::Formatter, exc: &[Vector; 16], int: &[Vector]) {
+    use defmt::write;
+
+    // Header with Vector Table address.
+    write!(fmt, "Vector Table @ 0x{:X}\nExceptions:\n", exc as *const _ as u32);
+
+    // Log the exceptions.
+    write!(
+        fmt,
+        "  SP     : {}\n  Reset  : {}\n  NMI    : {}\n  Hard   : {}\n  Mem    : {}\n  Bus    : {}\n  Usage  : {}\n  Secure : {}\n  SVC    : {}\n  Debug  : {}\n  PendSV : {}\n  Systick: {}\n",
+        exc[0], exc[1], exc[2], exc[3], exc[4], exc[5], exc[6], exc[7], exc[11], exc[12], exc[14], exc[15],
+    );
+
+    // Log the interrupts.
+    write!(fmt, "Interrupts:");
+
+    for (i, vector) in int.iter().enumerate() {
+        write!(fmt, "\n  {:03}: {}", i, vector);
+    }
+}

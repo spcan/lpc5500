@@ -28,3 +28,11 @@ impl Vector {
         Self { raw: 0 }
     }
 }
+
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for Vector {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "0x{:08X}", unsafe { self.raw } );
+    }
+}
