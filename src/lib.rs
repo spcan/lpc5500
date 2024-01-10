@@ -42,11 +42,11 @@ pub unsafe extern "C" fn Reset() {
     // Enable all memories.
     //mem::init();
 
-    // Initialize the vector tables and interrupts.
-    vtable::init();
-
     // Initialize the system.
     let user = system::init();
+
+    // Initialize the vector tables and interrupts.
+    vtable::init();
 
     // Initialize the DMAs.
     //dma::init();
