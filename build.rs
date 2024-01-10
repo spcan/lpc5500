@@ -92,7 +92,7 @@ fn buildscript() {
 fn buildflash(memory: &mut Vec<u8>, sections: &mut Vec<u8>, asserts: &mut Vec<u8>) {
     // Ensure that at least one flash feature flag is active.
     #[cfg(not(any( feature = "flash-640", feature = "flash-512", feature = "flash-256" )))]
-    panic!("At least one FLASH feature flag must be active");
+    panic!("One FLASH feature flag must be active");
 
     // Select the 'memory.ld' file path based on the active feature flags.
     #[cfg(feature = "flash-640")]
@@ -196,7 +196,7 @@ fn buildcores(memory: &mut Vec<u8>, sections: &mut Vec<u8>, asserts: &mut Vec<u8
 fn buildram(memory: &mut Vec<u8>, sections: &mut Vec<u8>, asserts: &mut Vec<u8>) {
     // Ensure that at least one sram feature flag is active.
     #[cfg(not(any( feature = "sram-320", feature = "sram-256", feature = "sram-144" )))]
-    panic!("At least one SRAM feature flag must be active");
+    panic!("One SRAM feature flag must be active");
 
     #[cfg(feature = "sram-320")]
     let path = ".linker/ram/memory/320.ld";
