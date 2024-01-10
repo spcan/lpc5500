@@ -7,15 +7,8 @@
         /* Export start address */
         __svt = .;
 
-        /* Reset Stack Pointer */
-        LONG( ORIGIN(STACK0) + LENGTH(STACK0) );
-
-        /* Force keep the Reset Vector */
-        /*KEEP(*(.RESETVECTOR));*/
-        LONG( Reset );
-
         /* Force keep the Reset Vector Table */
-        KEEP(*(.exceptions));
+        KEEP(*(.vtable.RESET));
 
         /* Export end address */
         __evt = .;
