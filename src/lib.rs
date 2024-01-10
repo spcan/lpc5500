@@ -16,7 +16,9 @@ pub mod powerquad;
 pub mod security;
 pub mod system;
 
-mod interrupts;
+pub(crate) mod asm;
+
+mod vtable;
 mod peripherals;
 
 
@@ -30,13 +32,19 @@ pub use peripherals::Peripherals;
 
 #[link_section = ".RESETVECTOR"]
 #[used]
-static RESET: unsafe extern "C" fn() -> ! = Reset;
+static RESET: unsafe extern "C" fn() = Reset;
 
 
 
 /// Initializes the HAL and returns an instance of all peripherals.
 #[no_mangle]
-pub unsafe extern "C" fn Reset() -> ! {
+pub unsafe extern "C" fn Reset() {
+    // Enable all memories.
+    //mem::init();
+
+    // Initialize the vector tables and interrupts.
+    vtable::init();
+
     // Initialize the system.
     let user = system::init();
 
