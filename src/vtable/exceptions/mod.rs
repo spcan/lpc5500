@@ -14,10 +14,6 @@ pub(self) mod systick;
 pub(self) mod usage;
 
 
-pub use bus::{ BusFault, BusFaultReason, };
-pub use usage::{ UsageFault, UsageFaultReason, };
-
-
 
 use super::Vector;
 
@@ -28,22 +24,22 @@ use super::Vector;
 #[used]
 pub(crate) static VTABLE0: [Vector; 14] = [
     // Non Maskable Interrupt exception.
-    Vector::create( nmi::Handler ),
+    Vector::handler( nmi::Handler ),
 
     // HardFault exception.
-    Vector::create( hardfault::Handler ),
+    Vector::handler( hardfault::Handler ),
 
     // Memory Usage exception.
-    Vector::create( mem::Handler ),
+    Vector::handler( mem::Handler ),
 
     // Bus Fault exception.
-    Vector::create( bus::Handler ),
+    Vector::handler( bus::Handler ),
 
     // Usage Fault exception.
-    Vector::create( usage::Handler ),
+    Vector::handler( usage::Handler ),
 
     // Secure Fault exception.
-    Vector::create( secure::Handler ),
+    Vector::handler( secure::Handler ),
 
     // Reserved 8.
     Vector::reserved(),
@@ -55,19 +51,19 @@ pub(crate) static VTABLE0: [Vector; 14] = [
     Vector::reserved(),
 
     // Supervisor Call exception.
-    Vector::create( svcall::Handler ),
+    Vector::handler( svcall::Handler ),
 
     // Debug Monitor exception.
-    Vector::create( debug::Handler ),
+    Vector::handler( debug::Handler ),
 
     // Reserved 13.
     Vector::reserved(),
 
     // Pend Supervisor Call exception.
-    Vector::create( pendsv::Handler ),
+    Vector::handler( pendsv::Handler ),
 
     // System Tick exception.
-    Vector::create( systick::Handler ),
+    Vector::handler( systick::Handler ),
 ];
 
 
@@ -95,7 +91,7 @@ fn hfsr() -> u32 {
 /// Default handler to block execution.
 #[allow(non_snake_case)]
 #[inline(never)]
-unsafe extern "C" fn Block() {
+pub(super) unsafe extern "C" fn Block() {
     loop { core::arch::asm!("nop", options(nomem, nostack)) }
 }
 
@@ -104,6 +100,6 @@ unsafe extern "C" fn Block() {
 /// Default handler to ignore exception.
 #[allow(non_snake_case)]
 #[inline(never)]
-unsafe extern "C" fn Ignore() {
+pub(super) unsafe extern "C" fn Ignore() {
     return
 }
