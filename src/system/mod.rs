@@ -137,9 +137,7 @@ pub fn init() -> user::UserSystemControl {
             ",
 
             // Pop the registers used.
-            "
-            pop {{r0-r3}}
-            ",
+            "pop {{r0-r3}}",
 
             options(nostack)
         );
@@ -151,36 +149,49 @@ pub fn init() -> user::UserSystemControl {
     // Initialize the user interface.
     let user = user::UserSystemControl::init();
 
-    // Initialize the analog control peripheral.
-    //reset::ResetControl::unreset::<analog::AnalogControl>();
-    //enable::EnableControl::enable::<analog::AnalogControl>();
-
-    // Initialize the clocks.
-    //clocks::init();
-
-    // Read CPACR @ 0xE000ED88 and enable both the PowerQuad (CP0) and CASPER (CP1) coprocessors.
+    // Enable the PowerQuad (CP0) and CASPER (CP1) coprocessor interfaces.
     unsafe {
-        // Read the CPACR.
-        let mut cpacr = core::ptr::read_volatile(0xE000ED88 as *const u32);
+        // Experimental assembly implementation for code compactness.
+        /*
+        core::arch::asm!(
+            // Push the registers that will be used. 
+            "push {{r0-r2}}",
+
+            // Load the base address on the r0 register.
+            "ldr r0, =0xE000ED88",
+
+            // Load the CPACR and NSACR registers onto R1 and R2.
+            "ldmia r0, {{r1,r2}}",
+
+            // Modify R1 and R2 to enable the registers.
+            "orr r1,r1,#0x0000000F",
+            "orr r2,r2,#0x00000003",
+
+            // Write back the new registers.
+            "stmia r0, {{r1,r2}}",
+
+            // Pop the registers used.
+            "pop {{r0-r2}}",
+
+            options(nostack)
+        );
+        */
+        // Base address of the CPACR.
+        const BASE: u32 = 0xE000ED88;
+
+        // Read the CPACR @ 0xE000ED88 and NSACR @0xE000ED8C.
+        let mut cpacr = core::ptr::read_volatile((BASE + 0) as *const u32);
+        let mut nsacr = core::ptr::read_volatile((BASE + 4) as *const u32);
 
         // Enable full access for the PQ and CASPER.
         cpacr |= (0b11 << 2) | (0b11 << 0);
+        nsacr |= (   1 << 1) | (   1 << 0);
 
-        // Write the modified CPACR.
-        core::ptr::write_volatile(0xE000ED88 as *mut u32, cpacr);
+        // Write the modified CPACR and NSACR.
+        core::ptr::write_volatile((BASE + 0) as *mut u32, cpacr);
+        core::ptr::write_volatile((BASE + 4) as *mut u32, nsacr);
     }
 
-    // Read NSACR @ 0xE000ED8C and enable both PQ and CASPER in non secure code.
-    unsafe {
-        // Read the NSACR.
-        let mut nsacr = core::ptr::read_volatile(0xE000ED8C as *const u32);
-
-        // Enable full access for the PQ and CASPER.
-        nsacr |= (1 << 1) | (1 << 0);
-
-        // Write the modified NSACR.
-        core::ptr::write_volatile(0xE000ED8C as *mut u32, nsacr);
-    }
-
-    user
+    // Return the `UserSystemControl` instance.
+    return user;
 }
