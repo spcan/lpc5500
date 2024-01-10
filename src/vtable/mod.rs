@@ -4,7 +4,6 @@
 
 pub(crate) mod exceptions;
 pub(crate) mod global;
-pub(crate) mod interrupts;
 
 mod table;
 mod vector;
@@ -25,15 +24,27 @@ pub(super) fn init() {
     }
 
     // Register Core 0 exceptions.
-    unsafe { global::main::CORE0VTABLE.copyexc( &global::reset::RESETVTABLE ) }
+    unsafe { global::runtime::CORE0VTABLE.copyexc( &global::reset::RESETVTABLE ) }
 
     // Set up Core 0 NVIC.
-    vtableinit( unsafe { &interrupts::main::C0INTERRUPTS } );
+    vtableinit( unsafe { &global::runtime::CORE0VTABLE } );
+
+    #[cfg(feature = "defmt")]
+    {
+        // Log the VTOR value.
+        defmt::info!("CORE 0 VTOR 0x{:08X}", unsafe { core::ptr::read_volatile(0xE000ED08 as *const u32) });
+
+        // Log the Vector Table.
+        defmt::info!("CORE 0 {}", unsafe { &global::runtime::CORE0VTABLE } );
+    }
 }
 
 
 /// Common function for all cores to initialize the vector table.
 pub extern "Rust" fn vtableinit(vtable: &VectorTable<60>) {
+    #[cfg(feature = "defmt")]
+    defmt::debug!("Modifying VTOR address...");
+
     // Modify VTOR register.
     unsafe { core::ptr::write_volatile(0xE000ED08 as *mut u32, vtable as *const _ as u32) }
 
