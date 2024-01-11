@@ -2,9 +2,15 @@
 
 
 
+pub(crate) mod handler;
+
 pub mod matrix;
 
+mod error;
 
+
+
+pub use error::Error;
 
 use matrix::MatrixOperation;
 
@@ -139,13 +145,14 @@ impl super::sleep::Sleep for Engine {
     }
 }
 
+/*
 impl Drop for Engine {
     fn drop(&mut self) {
         // Increase the POWEROFF counter to allow the other interfaces to sleep.
         super::poweroff();
     }
 }
-
+*/
 
 
 pub enum Coprocessor {
