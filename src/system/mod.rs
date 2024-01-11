@@ -151,31 +151,6 @@ pub fn init() -> user::UserSystemControl {
 
     // Enable the PowerQuad (CP0) and CASPER (CP1) coprocessor interfaces.
     unsafe {
-        // Experimental assembly implementation for code compactness.
-        /*
-        core::arch::asm!(
-            // Push the registers that will be used. 
-            "push {{r0-r2}}",
-
-            // Load the base address on the r0 register.
-            "ldr r0, =0xE000ED88",
-
-            // Load the CPACR and NSACR registers onto R1 and R2.
-            "ldmia r0, {{r1,r2}}",
-
-            // Modify R1 and R2 to enable the registers.
-            "orr r1,r1,#0x0000000F",
-            "orr r2,r2,#0x00000003",
-
-            // Write back the new registers.
-            "stmia r0, {{r1,r2}}",
-
-            // Pop the registers used.
-            "pop {{r0-r2}}",
-
-            options(nostack)
-        );
-        */
         // Base address of the CPACR.
         const BASE: u32 = 0xE000ED88;
 
