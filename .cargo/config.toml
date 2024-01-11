@@ -1,17 +1,20 @@
-[target.thumbv8m.main-none-eabihf]
-rustflags = [
-    "-C", "link-arg=-Tlink.x",
+#[target.thumbv8m.main-none-eabihf]
+#rustflags = [
+#    "-C", "link-arg=-Tlink.x",
 
     # code optimizations.
     #"-Z", "trap-unreachable=yes",
-    "-C", "no-vectorize-loops",
-]
+    #"-C", "no-vectorize-loops",
 
-[build]
-target = "thumbv8m.main-none-eabihf"
+    # Fixes LLVM bug on function outlining
+#    "-C", "llvm-args=--enable-machine-outliner=never",
+#]
 
-[profile.release]
-lto = true
-debug = true
-codegen-units = 1
-opt-level = "z"
+#[build]
+#target = "thumbv8m.main-none-eabihf"
+
+#[profile.release]
+#lto = true
+#debug = true
+#codegen-units = 1
+#opt-level = "s"
