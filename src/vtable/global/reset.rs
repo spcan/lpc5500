@@ -26,7 +26,7 @@ pub static RESETVTABLE: VectorTable<0> = VectorTable::preloaded([
     Vector::handler( Block ),
 
     // HardFault exception.
-    Vector::handler( Block ),
+    Vector::handler( super::super::exceptions::hardfault::Handler ),
 
     // Memory Usage exception.
     Vector::handler( Block ),

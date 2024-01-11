@@ -9,7 +9,7 @@ pub static mut REASONS: [u64; 6] = [0; 6];
 /// Function handler of the Hardfault exception.
 #[allow(non_snake_case)]
 #[inline(never)]
-pub(super) unsafe extern "C" fn Handler() {
+pub(crate) unsafe extern "C" fn Handler() {
     // Get all possible reasons of the HardFault.
     let bus = super::bus::BusFault::get();
     let mem = super::mem::MemFault::get();
@@ -21,6 +21,11 @@ pub(super) unsafe extern "C" fn Handler() {
         let common = core::ptr::read_volatile(0xE000ED28 as *const u32);
         REASONS = [hard.state() as u64, bus.state() as u64, mem.state() as u64, usage.state() as u64, secure.state() as u64, common as u64];
     }
+
+    //defmt::error!(
+    //    "Hardfault exception:\n  Trigger: {}\n  Bus: {}\n  Mem: {}\n  Usage: {}\n  Secure: {}\n",
+    //    hard.state(), bus.state(), mem.state(), usage.state(), secure.state(),
+    //);
 
     loop { core::arch::asm!("nop", options(nomem, nostack)) }
 }

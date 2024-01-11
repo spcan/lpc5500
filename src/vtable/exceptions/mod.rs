@@ -2,69 +2,20 @@
 
 
 
-pub(self) mod bus;
-pub(self) mod debug;
-pub(self) mod hardfault;
-pub(self) mod mem;
-pub(self) mod nmi;
-pub(self) mod pendsv;
-pub(self) mod secure;
-pub(self) mod svcall;
-pub(self) mod systick;
-pub(self) mod usage;
+pub(super) mod bus;
+pub(super) mod debug;
+pub(super) mod hardfault;
+pub(super) mod mem;
+pub(super) mod nmi;
+pub(super) mod pendsv;
+pub(super) mod secure;
+pub(super) mod svcall;
+pub(super) mod systick;
+pub(super) mod usage;
 
 
 
 use super::Vector;
-
-
-
-/// Vector table of Core 0.
-#[link_section = ".exceptions"]
-#[used]
-pub(crate) static VTABLE0: [Vector; 14] = [
-    // Non Maskable Interrupt exception.
-    Vector::handler( nmi::Handler ),
-
-    // HardFault exception.
-    Vector::handler( hardfault::Handler ),
-
-    // Memory Usage exception.
-    Vector::handler( mem::Handler ),
-
-    // Bus Fault exception.
-    Vector::handler( bus::Handler ),
-
-    // Usage Fault exception.
-    Vector::handler( usage::Handler ),
-
-    // Secure Fault exception.
-    Vector::handler( secure::Handler ),
-
-    // Reserved 8.
-    Vector::reserved(),
-
-    // Reserved 9.
-    Vector::reserved(),
-
-    // Reserved 10.
-    Vector::reserved(),
-
-    // Supervisor Call exception.
-    Vector::handler( svcall::Handler ),
-
-    // Debug Monitor exception.
-    Vector::handler( debug::Handler ),
-
-    // Reserved 13.
-    Vector::reserved(),
-
-    // Pend Supervisor Call exception.
-    Vector::handler( pendsv::Handler ),
-
-    // System Tick exception.
-    Vector::handler( systick::Handler ),
-];
 
 
 

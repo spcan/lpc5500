@@ -18,7 +18,7 @@ pub mod system;
 
 pub(crate) mod asm;
 
-mod vtable;
+pub mod vtable;
 mod peripherals;
 
 
