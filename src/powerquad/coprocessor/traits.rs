@@ -109,6 +109,18 @@ pub trait CoprocessorInterface<'a, NUMBER: CoprocessorNumber>: Sized {
         self.result( ReadType::Mul )
     }
 
+    /// Initiates the calculation of the division of 'a' by 'b'.
+    /// WARNING : Does not perform modulus calculation.
+    fn div(&'a mut self, a: NUMBER, b: NUMBER) -> Self::Result
+        where [(); NUMBER::ID | Self::CPID]: Sized
+    {
+        // Send the parameters to the coprocessor.
+        Self::mcrr::<{TransFns::DIV}>(a.raw(), b.raw());
+
+        // Create the result.
+        self.result( ReadType::Mul )
+    }
+
     /// Initiates the calculation of the sine of the given number.
     #[inline(always)]
     fn sin(&'a mut self, x: NUMBER) -> Self::Result
@@ -138,7 +150,15 @@ pub trait CoprocessorInterface<'a, NUMBER: CoprocessorNumber>: Sized {
     fn mcr<const ENGINE: usize, const FUNCTION: u32>(x: u32)
         where [(); NUMBER::ID | Self::CPID]: Sized, [(); ENGINE + (4 * NUMBER::ID)]: Sized
     {
-        super::asm::mcr::<PQID, FUNCTION, {NUMBER::ID | Self::CPID}, 0, {ENGINE + (4 * NUMBER::ID)}>(x);
+        crate::asm::coprocessor::mcr::<PQID, FUNCTION, {NUMBER::ID | Self::CPID}, 0, {ENGINE + (4 * NUMBER::ID)}>(x);
+    }
+
+    /// Low-level function to call the MCRR instruction.
+    #[inline(always)]
+    fn mcrr<const FUNCTION: u32>(a: u32, b: u32)
+        where [(); NUMBER::ID | Self::CPID]: Sized
+    {
+        crate::asm::coprocessor::mcrr::<PQID, {NUMBER::ID | Self::CPID}, FUNCTION>(b, a);
     }
 
     /// Internal function to create a result.
