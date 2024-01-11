@@ -4,7 +4,7 @@
 
 pub mod traits;
 
-mod asm;
+//mod asm;
 mod engine;
 mod function;
 
@@ -36,12 +36,14 @@ impl<const N: usize> super::sleep::Sleep for Coprocessor<N> {
     }
 }
 
+/*
 impl<const N: usize> Drop for Coprocessor<N> {
     fn drop(&mut self) {
         // Increase the POWEROFF counter to allow the other interfaces to sleep.
         super::poweroff();
     }
 }
+*/
 
 #[cfg(feature = "defmt")]
 impl<const N: usize> defmt::Format for Coprocessor<N> {
@@ -72,7 +74,7 @@ impl<'a, const N: usize, NUMBER: CoprocessorNumber> Operation<'a, N, NUMBER> {
     /// Internal read function of type MUL.
     fn read<const READ: u32, const TYPE: usize>(self) -> NUMBER {
         // Read the result raw.
-        let raw = asm::mrc::<{traits::PQID}, READ, TYPE, 0, 0>();
+        let raw = crate::asm::coprocessor::mrc::<{traits::PQID}, READ, TYPE, 0, 0>();
 
         // Transform into the type.
         let result = NUMBER::from( raw );
