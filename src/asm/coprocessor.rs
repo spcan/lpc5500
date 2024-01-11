@@ -44,3 +44,22 @@ pub(crate) fn mrc<const CP: u32, const OP1: u32, const CRN: usize, const CRM: u3
 
     raw
 }
+
+
+
+/// Internal function to create an inlined MCRR instruction.
+/// This instruction moves two Registers to Coprocessor Registers.
+#[inline(always)]
+pub(crate) fn mcrr<const CP: u32, const OP1: usize, const CRM: u32>(a: u32, b: u32) {
+    unsafe {
+        core::arch::asm!(
+            "MCRR p{cp}, #{op1}, {0}, {1}, c{crm}",
+            in(reg) a,
+            in(reg) b,
+            cp  = const CP,
+            op1 = const OP1,
+            crm = const CRM,
+            options(nostack, nomem)
+        )
+    }
+}
