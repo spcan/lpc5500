@@ -12,6 +12,11 @@ use crate::{
     powerquad::PowerQuad,
 
     system::user::UserSystemControl,
+    
+    timers::{
+        ostimer::OSTime,
+        utick::MicroTick,
+    },
 };
 
 
@@ -25,4 +30,10 @@ pub struct Peripherals {
 
     /// User facing System Control interface.
     pub user: UserSystemControl,
+
+    /// Global OS time access.
+    pub ostime: OSTime,
+
+    /// Micro second timer.
+    pub utick: MicroTick,
 }

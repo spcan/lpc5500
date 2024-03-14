@@ -2,6 +2,7 @@
 
 
 
+/// Union vector. Contains either reserved or raw values or function pointers.
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub union Vector {

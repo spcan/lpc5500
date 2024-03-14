@@ -2,26 +2,27 @@
 
 
 
-pub mod channel;
-pub mod common;
+//pub mod channel;
+//pub mod common;
 pub mod descriptor;
-pub mod endpoint;
-pub mod transfer;
+//pub mod endpoint;
+//pub mod transfer;
 
-mod error;
-mod dma0;
-mod dma1;
+//mod error;
+//mod dma0;
+//mod dma1;
 
 
 
-pub use error::DMAError;
+//pub use error::DMAError;
 
-use crate::system::SystemControl;
-use common::Width;
+//use crate::system::SystemControl;
+//use common::Width;
 
 
 
 pub(crate) fn init() {
+    /*
     use dma0::DMA0;
     use dma1::DMA1;
 
@@ -44,6 +45,7 @@ pub(crate) fn init() {
         write( 0x40082000 as *mut u32, 1 );
         write( 0x400A7000 as *mut u32, 1 );
     }
+    */
 }
 
 
