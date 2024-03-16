@@ -25,6 +25,11 @@ impl<const N: usize> VectorTable<N> {
         }
     }
 
+    /// Returns a reference to the vector table of the current core.
+    pub unsafe fn current<'a>() -> &'a mut Self {
+        &mut *(core::ptr::read_volatile(0xE000ED08 as *const u32) as *mut Self)
+    }
+
     /// Copies the exception table of the given vector table.
     pub unsafe fn copyexc<const M: usize>(&mut self, other: &VectorTable<M>) {
         for i in 0..self.exceptions.len() {

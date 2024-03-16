@@ -1,6 +1,4 @@
-//! Channels of the ADC.
-//! Each channel can generate commands that must be then registered with the ADC
-//! to be executed.
+//! Hardware channels of the ADC.
 
 
 
@@ -9,32 +7,26 @@ mod basic;
 
 
 
-pub use advanced::ADCAdvanced;
-pub use basic::ADCBasic;
-
-
-
-/// Instance of an ADC Channel.
+/// Instance of an ADC hardware channel.
 pub struct Channel<const N: usize>;
 
 
-/// The channel that measures the supply voltage of the ADC complex.
+
+/// The channel that measures the voltage supply of the ADC complex.
 pub type ADCSupply = Channel<12>;
 
 /// The channel that measures the 1 Volt bandgap in the ADC complex.
 pub type ADC1V = Channel<13>;
 
-/// The channel that measure the temperature sensor.
+/// The channel that measures the temperature sensor.
 pub type Temperature = Channel<26>;
 
 
 
-/// Common trait for all ADC Channels.
+/// Common trait for all ADC channels.
 pub trait ADCChannel {
     const NUMBER: u8;
 }
-
-
 
 impl ADCChannel for Channel<0> {
     const NUMBER: u8 = 0;

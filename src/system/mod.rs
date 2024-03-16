@@ -38,6 +38,7 @@ impl SystemControl {
 // Peripheral control. Reset, enable, etc...
 impl SystemControl {
     /// Enables the clock to a peripheral.
+    #[inline]
     pub(crate) fn enable<P: enable::Enable>() {
         // The reset clear register.
         let dst = (Self::SYSCON + Self::AHBSET) + (P::REG * 4);
@@ -49,6 +50,7 @@ impl SystemControl {
     }
 
     /// Disables the clock to a peripheral.
+    #[inline]
     pub(crate) fn disable<P: enable::Disable>() {
         // The reset clear register.
         let dst = (Self::SYSCON + Self::AHBCLR) + (P::REG * 4);
@@ -60,6 +62,7 @@ impl SystemControl {
     }
 
     /// Puts a peripheral in the reset state.
+    #[inline]
     pub(crate) fn reset<P: reset::Reset>() {
         // The reset clear register.
         let dst = (Self::SYSCON + Self::RSTSET) + (P::REG * 4);
@@ -71,6 +74,7 @@ impl SystemControl {
     }
 
     /// Takes a peripheral out of the reset state.
+    #[inline]
     pub(crate) fn unreset<P: reset::Unreset>() {
         // The reset clear register.
         let dst = (Self::SYSCON + Self::RSTCLR) + (P::REG * 4);
@@ -79,6 +83,14 @@ impl SystemControl {
             // Write to the clear register.
             core::ptr::write_volatile(dst as *mut u32, 1 << P::OFF);
         }
+    }
+
+    /// Performs the reset initialization procedure of a peripheral.
+    pub(crate) fn init<P: enable::Enable + enable::Disable + reset::Reset + reset::Unreset>() {
+        Self::reset::<P>();
+        Self::enable::<P>();
+        Self::unreset::<P>();
+        Self::enable::<P>();
     }
 }
 

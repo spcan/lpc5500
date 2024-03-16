@@ -2,8 +2,7 @@
 
 
 
-//pub mod command;
-
+pub mod channel;
 
 
 use core::ptr::{
@@ -53,17 +52,8 @@ impl Adc {
 
     /// Initializes the ADC.
     pub fn init(&mut self/*, config: Config*/) {
-        // Reset the peripheral.
-        SystemControl::reset::<Self>();
-
-        // Enable the clock to the peripheral.
-        SystemControl::enable::<Self>();
-
-        // Unreset the peripheral.
-        SystemControl::unreset::<Self>();
-
-        // Enable the clock to the peripheral.
-        SystemControl::enable::<Self>();
+        // Initialize the peripheral.
+        SystemControl::init::<Self>();
 
         unsafe {
             // Reset the ADC clock div.
