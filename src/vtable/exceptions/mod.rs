@@ -1,5 +1,7 @@
 
 
+#![allow(warnings)]
+
 
 
 pub(super) mod bus;
@@ -12,10 +14,6 @@ pub(super) mod secure;
 pub(super) mod svcall;
 pub(super) mod systick;
 pub(super) mod usage;
-
-
-
-use super::Vector;
 
 
 

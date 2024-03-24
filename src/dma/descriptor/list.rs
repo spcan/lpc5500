@@ -1,32 +1,27 @@
-//! A list of descriptors with static initialization.
+//! DMA 0 and DMA 1 descriptor lists.
 
 
 
-use super::Descriptor;
+/// Descriptor list of DMA 0.
+//#[link_section = ".bss"]
+#[used]
+pub(crate) static DMA0DESCRIPTORS: DescriptorList<23> = DescriptorList::uninit();
+
+
+/// Descriptor list of DMA 1.
+//#[link_section = ".bss"]
+#[used]
+pub(crate) static DMA1DESCRIPTORS: DescriptorList<10> = DescriptorList::uninit();
 
 
 
-#[derive(Clone, Copy)]
-#[repr(C, align(512))]
-pub struct DescriptorList<'a, const N: usize>(pub(super) [Descriptor<'a>; N]);
+/// N sized descriptor list.
+#[repr(align(512))]
+pub(crate) struct DescriptorList<const N: usize>([super::Descriptor; N]);
 
-impl<'a, const N: usize> DescriptorList<'a, N> {
-    /// Creates an empty descriptor list.
-    pub const fn empty() -> Self {
-        Self([Descriptor::empty(); N])
-    }
-}
-
-impl<'a, const N: usize> core::ops::Index<usize> for DescriptorList<'a, N> {
-    type Output = Descriptor<'a>;
-
-    fn index(&self, index: usize) -> &Descriptor<'a> {
-        &self.0[index]
-    }
-}
-
-impl<'a, const N: usize> core::ops::IndexMut<usize> for DescriptorList<'a, N> {
-    fn index_mut(&mut self, index: usize) -> &mut Descriptor<'a> {
-        &mut self.0[index]
+impl<const N: usize> DescriptorList<N> {
+    /// Creates an uninitialized descriptor list.
+    pub(self) const fn uninit() -> Self {
+        Self([super::Descriptor::uninit(); N])
     }
 }

@@ -2,7 +2,17 @@
 
 
 
-pub mod channel;
+//pub mod channel;
+
+mod command;
+mod trigger;
+
+
+
+pub use trigger::{
+    Buffer, Trigger, TriggerConfig,
+};
+
 
 
 use core::ptr::{

@@ -1,20 +1,13 @@
-//! DMA transfer module.
+//! DMA transfer control.
 
 
 
-mod b2b;
+/// Transfer endpoint.
+/// An endpoint can be either the source of a transfer or the destination.
+pub enum Endpoint<'a> {
+    /// Represents a peripheral endpoint.
+    Peripheral(u32),
 
-
-
-pub use b2b::B2BTransfer;
-
-
-
-/// Common trait for all transfers.
-pub trait Transfer {
-    /// Returns the destination end address.
-    fn dstend(&self) -> u32;
-
-    /// Returns the source end address.
-    fn srcend(&self) -> u32;
+    /// Represents a buffer transfer.
+    Buffer(&'a [u8]),
 }
